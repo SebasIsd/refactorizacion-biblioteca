@@ -1,6 +1,10 @@
-// biblioteca.js
+// bibliotecaService.js
+// Refactorización aplicando Clean Code (Actividad 3)
+// Nota: la separación en carpetas/módulos y la eliminación de duplicación
+// se abordan en las Actividades 4 y 5. Aquí solo se mejora legibilidad,
+// nombres, comentarios y comparaciones, sin alterar el comportamiento.
 
-var libros = [
+const libros = [
     {
         id: 1,
         titulo: "Clean Code",
@@ -24,18 +28,16 @@ var libros = [
     }
 ];
 
+function buscarLibro(textoBusqueda) {
 
-// BUSCAR LIBRO
-function buscar(x) {
+    let seEncontroAlgunLibro = false;
 
-    var encontrado = false;
+    for (let i = 0; i < libros.length; i++) {
 
-    for (var i = 0; i < libros.length; i++) {
+        const coincideEnTitulo = libros[i].titulo.toLowerCase().includes(textoBusqueda.toLowerCase());
+        const coincideEnAutor = libros[i].autor.toLowerCase().includes(textoBusqueda.toLowerCase());
 
-        if (
-            libros[i].titulo.toLowerCase().includes(x.toLowerCase()) ||
-            libros[i].autor.toLowerCase().includes(x.toLowerCase())
-        ) {
+        if (coincideEnTitulo || coincideEnAutor) {
 
             console.log(
                 libros[i].id +
@@ -45,45 +47,42 @@ function buscar(x) {
                 libros[i].autor
             );
 
-            if (libros[i].estado == "D") {
+            if (libros[i].estado === "D") {
                 console.log("Disponible");
             } else {
                 console.log("Prestado");
             }
 
-            encontrado = true;
+            seEncontroAlgunLibro = true;
         }
     }
 
-    if (encontrado == false) {
+    if (seEncontroAlgunLibro === false) {
         console.log("No se encontraron libros");
     }
 }
 
+function consultarDisponibilidad(id) {
 
-// VER DISPONIBILIDAD
-function disponibilidad(id) {
+    let libroEncontrado = null;
 
-    var x = null;
-
-    for (var i = 0; i < libros.length; i++) {
-
-        if (libros[i].id == id) {
-            x = libros[i];
+    for (let i = 0; i < libros.length; i++) {
+        if (libros[i].id === id) {
+            libroEncontrado = libros[i];
         }
     }
 
-    if (x == null) {
+    if (libroEncontrado === null) {
 
         console.log("Libro no encontrado");
 
     } else {
 
-        if (x.estado == "D") {
+        if (libroEncontrado.estado === "D") {
 
             console.log(
                 "El libro " +
-                x.titulo +
+                libroEncontrado.titulo +
                 " está disponible"
             );
 
@@ -91,49 +90,46 @@ function disponibilidad(id) {
 
             console.log(
                 "El libro " +
-                x.titulo +
+                libroEncontrado.titulo +
                 " está prestado a " +
-                x.usuario
+                libroEncontrado.usuario
             );
         }
     }
 }
 
+function prestarLibro(id, nombreUsuario) {
 
-// RENTAR / PRESTAR LIBRO
-function rentar(id, nombre) {
+    let libro = null;
 
-    var libro = null;
-
-    for (var i = 0; i < libros.length; i++) {
-
-        if (libros[i].id == id) {
+    for (let i = 0; i < libros.length; i++) {
+        if (libros[i].id === id) {
             libro = libros[i];
         }
     }
 
-    if (libro == null) {
+    if (libro === null) {
 
         console.log("Libro no encontrado");
 
     } else {
 
-        if (nombre == null || nombre == "") {
+        if (nombreUsuario === null || nombreUsuario === "") {
 
             console.log("Debe ingresar el nombre del usuario");
 
         } else {
 
-            if (libro.estado == "D") {
+            if (libro.estado === "D") {
 
                 libro.estado = "P";
-                libro.usuario = nombre;
+                libro.usuario = nombreUsuario;
 
                 console.log(
                     "El libro " +
                     libro.titulo +
                     " fue prestado correctamente a " +
-                    nombre
+                    nombreUsuario
                 );
 
             } else {
@@ -146,26 +142,23 @@ function rentar(id, nombre) {
     }
 }
 
+function devolverLibro(id) {
 
-// DEVOLVER LIBRO
-function devolver(id) {
+    let libro = null;
 
-    var libro = null;
-
-    for (var i = 0; i < libros.length; i++) {
-
-        if (libros[i].id == id) {
+    for (let i = 0; i < libros.length; i++) {
+        if (libros[i].id === id) {
             libro = libros[i];
         }
     }
 
-    if (libro == null) {
+    if (libro === null) {
 
         console.log("Libro no encontrado");
 
     } else {
 
-        if (libro.estado == "P") {
+        if (libro.estado === "P") {
 
             console.log(
                 "Devolución realizada. Libro: " +
@@ -186,13 +179,11 @@ function devolver(id) {
     }
 }
 
-
-// LISTAR TODOS LOS LIBROS
-function listar() {
+function listarLibros() {
 
     console.log("---------- BIBLIOTECA ----------");
 
-    for (var i = 0; i < libros.length; i++) {
+    for (let i = 0; i < libros.length; i++) {
 
         console.log(
             libros[i].id +
@@ -209,24 +200,24 @@ function listar() {
 }
 
 
-// PRUEBAS MANUALES
+// PRUEBAS MANUALES (mismo comportamiento que el original)
 
-listar();
+listarLibros();
 
 console.log("\nBUSCAR:");
-buscar("Clean");
+buscarLibro("Clean");
 
 console.log("\nDISPONIBILIDAD:");
-disponibilidad(1);
+consultarDisponibilidad(1);
 
 console.log("\nPRESTAR:");
-rentar(1, "Carlos");
+prestarLibro(1, "Carlos");
 
 console.log("\nDISPONIBILIDAD DESPUÉS DEL PRÉSTAMO:");
-disponibilidad(1);
+consultarDisponibilidad(1);
 
 console.log("\nDEVOLVER:");
-devolver(1);
+devolverLibro(1);
 
 console.log("\nESTADO FINAL:");
-disponibilidad(1);
+consultarDisponibilidad(1);
